@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pomodoro Timer</title>
+    <title>Sound Test</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -13,153 +13,26 @@
             height: 100vh;
             background-color: #f4f4f4;
         }
-        #timer {
-            font-size: 48px;
-            margin-bottom: 20px;
-        }
-        #status {
+        button {
+            padding: 20px 40px;
             font-size: 24px;
-            margin-bottom: 20px;
-        }
-        button, input {
-            margin: 0 10px;
-            padding: 10px 20px;
-            font-size: 16px;
-        }
-        input[type="number"] {
-            width: 60px;
-        }
-        input[type="text"] {
-            width: 200px;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
-    <div>
-        <div id="status">Ready</div>
-        <div id="timer">25:00</div>
-        <button onclick="startTimer()">Start 25min</button>
-        <button onclick="startCustomTimer()">Start Custom</button>
-        <button onclick="startShortBreak()">5min Break</button>
-        <button onclick="startLongBreak()">15min Break</button>
-        <button onclick="pauseOrResumeTimer()">Pause</button>
-        <button onclick="resetTimer()">Reset</button>
-        <br><br>
-        <label for="custom-time">Custom Time (min):</label>
-        <input type="number" id="custom-time" min="1" max="120" value="25"><br><br>
-        <label for="custom-message">Custom Message:</label>
-        <input type="text" id="custom-message" placeholder="Enter your message">
-        <!-- 音声ファイルの読み込み -->
-        <audio id="alarm-sound" src="https://www.soundjay.com/button/beep-07.wav" preload="auto"></audio>
-    </div>
+    <button onclick="playSound()">Play Sound</button>
+    
+    <!-- 音声ファイルの読み込み -->
+    <audio id="alarm-sound" src="https://www.soundjay.com/button/beep-07.wav" preload="auto"></audio>
 
     <script>
-        let defaultTime = 25 * 60; // 25 minutes in seconds
-        let shortBreakTime = 5 * 60; // 5 minutes in seconds
-        let longBreakTime = 15 * 60; // 15 minutes in seconds
-        let timeLeft = defaultTime;
-        let isRunning = false;
-        let isPaused = false;
-        let timerInterval;
-        let previousStatus = "Ready"; // 一時停止前の状態を保存する変数
-
-        function startTimer() {
-            clearExistingTimer();
-            timeLeft = defaultTime;
-            updateStatus("Working for 25 minutes");
-            startCountdown(true); // true = 25minタイマー
-        }
-
-        function startCustomTimer() {
-            clearExistingTimer();
-            const customMinutes = document.getElementById('custom-time').value;
-            timeLeft = customMinutes * 60;
-            updateStatus(`Working for ${customMinutes} minutes`);
-            startCountdown(true); // true = カスタムタイマー
-        }
-
-        function startShortBreak() {
-            clearExistingTimer();
-            timeLeft = shortBreakTime;
-            updateStatus("Taking a 5-minute break");
-            startCountdown();
-        }
-
-        function startLongBreak() {
-            clearExistingTimer();
-            timeLeft = longBreakTime;
-            updateStatus("Taking a 15-minute break");
-            startCountdown();
-        }
-
-        function clearExistingTimer() {
-            clearInterval(timerInterval);
-            isRunning = false;
-            isPaused = false;
-        }
-
-        function startCountdown(isWorkTimer = false) {
-            isRunning = true;
-            timerInterval = setInterval(() => {
-                timeLeft--;
-                updateTimerDisplay(timeLeft);
-                if (timeLeft <= 0) {
-                    clearInterval(timerInterval);
-                    isRunning = false;
-                    handleTimeUp(isWorkTimer);
-                }
-            }, 1000);
-        }
-
-        function pauseOrResumeTimer() {
-            if (!isRunning) return;
-
-            if (isPaused) {
-                updateStatus(previousStatus); // 再開時に以前の状態に戻す
-                startCountdown();
-            } else {
-                clearInterval(timerInterval);
-                previousStatus = document.getElementById('status').textContent; // 一時停止前の状態を保存
-                updateStatus("Paused");
-            }
-            isPaused = !isPaused;
-        }
-
-        function resetTimer() {
-            clearExistingTimer();
-            timeLeft = defaultTime;
-            updateTimerDisplay(timeLeft);
-            updateStatus("Ready");
-        }
-
-        function handleTimeUp(isWorkTimer) {
-            updateStatus("Ready");
-            let customMessage = document.getElementById('custom-message').value;
-            playAlarm();
-            if (isWorkTimer && customMessage.trim() !== "") {
-                alert(customMessage);
-            } else {
-                alert("Time's up!");
-            }
-            document.getElementById('custom-message').value = ""; // メッセージをクリア
-        }
-
-        function playAlarm() {
+        function playSound() {
             const alarmSound = document.getElementById('alarm-sound');
             alarmSound.currentTime = 0; // 再生位置を先頭に戻す
             alarmSound.play().catch(error => {
-                console.error("自動再生がブロックされました:", error);
+                console.error("音声の再生に失敗しました:", error);
             });
-        }
-
-        function updateTimerDisplay(time) {
-            const minutes = Math.floor(time / 60);
-            const seconds = time % 60;
-            document.getElementById('timer').textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-        }
-
-        function updateStatus(status) {
-            document.getElementById('status').textContent = status;
         }
     </script>
 </body>
